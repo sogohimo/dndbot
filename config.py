@@ -3,5 +3,5 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+BOT_TOKEN = os.getenv("BOT_TOKEN")  # Токен Telegram-бота
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # API-ключ Groq
