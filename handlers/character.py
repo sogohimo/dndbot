@@ -2,6 +2,7 @@ from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from utils.groq import groq_generate
 
 router = Router()
 
@@ -38,5 +39,23 @@ async def process_race(message: types.Message, state: FSMContext):
 async def process_background(message: types.Message, state: FSMContext):
     await state.update_data(background=message.text)
     data = await state.get_data()
-    await message.reply(f"Персонаж создан!\nИмя: {data['name']}\nКласс: {data['class_']}\nРаса: {data['race']}\nПредыстория: {data['background']}")
+
+    # Генерация описания персонажа с помощью ИИ
+    character_prompt = (
+        f"Создай описание персонажа для D&D на основе следующих данных:\n"
+        f"Имя: {data['name']}\n"
+        f"Класс: {data['class_']}\n"
+        f"Раса: {data['race']}\n"
+        f"Предыстория: {data['background']}"
+    )
+    character_description = groq_generate(character_prompt)
+
+    await message.reply(
+        f"Персонаж создан!\n"
+        f"Имя: {data['name']}\n"
+        f"Класс: {data['class_']}\n"
+        f"Раса: {data['race']}\n"
+        f"Предыстория: {data['background']}\n\n"
+        f"Описание персонажа:\n{character_description}"
+    )
     await state.set_state(None)  # Сбрасываем состояние, но сохраняем данные

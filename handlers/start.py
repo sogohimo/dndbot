@@ -2,6 +2,7 @@ from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from utils.groq import groq_generate
 
 router = Router()
 
@@ -20,5 +21,13 @@ async def start_dnd_command(message: types.Message, state: FSMContext):
 @router.message(CreateGame.plot)
 async def process_plot(message: types.Message, state: FSMContext):
     await state.update_data(plot=message.text)
-    await message.reply(f"Сюжет игры: {message.text}. Теперь создайте персонажа с помощью /createcharacter.")
+
+    # Генерация расширенного сюжета с помощью ИИ
+    plot_prompt = f"Расширь сюжет для игры в D&D: {message.text}."
+    expanded_plot = groq_generate(plot_prompt)
+
+    await message.reply(
+        f"Сюжет игры:\n{expanded_plot}\n\n"
+        f"Теперь создайте персонажа с помощью /createcharacter."
+    )
     await state.set_state(None)  # Сбрасываем состояние, но сохраняем данные
